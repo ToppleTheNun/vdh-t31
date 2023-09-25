@@ -20,7 +20,7 @@ export function init() {
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
+    tracesSampleRate: ENV.MODE === "production" ? 0.2 : 1.0,
 
     // Capture Replay for 10% of all sessions,
     // plus for 100% of sessions with an error
