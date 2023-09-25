@@ -37,7 +37,7 @@ export const IngestForm = () => {
           name="warcraftLogsCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>WarcraftLogs Link</FormLabel>
               <FormControl>
                 <Input
                   placeholder="https://www.warcraftlogs.com/reports/..."
