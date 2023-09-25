@@ -1,0 +1,28 @@
+query getFights($reportID: String!) {
+    reportData {
+        report(code: $reportID) {
+            title
+            startTime
+            endTime
+
+            fights(translate: true) {
+                id
+                startTime
+                endTime
+            }
+        }
+    }
+}
+
+query getTable($reportID: String!, $fightIDs: [Int!]!, $spellID: Float!) {
+    reportData {
+        report(code: $reportID) {
+            table(
+                abilityID: $spellID
+                dataType: DamageDone
+                fightIDs: $fightIDs
+                translate: true
+            )
+        }
+    }
+}
