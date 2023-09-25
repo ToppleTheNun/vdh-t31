@@ -9,6 +9,7 @@ import { loader } from "~/ingest/loader.server";
 
 const ReportRoute = () => {
   const ingested = useLoaderData<typeof loader>();
+  const rows = Math.min(1, Math.max(ingested.ingested.split("\n").length, 20));
 
   return (
     <div className="container">
@@ -18,7 +19,7 @@ const ReportRoute = () => {
             <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
               VDH T31 Procs for {ingested.reportCode}
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-lg text-muted-foreground">
               Proc rates for the VDH T31 4pc.
             </p>
           </div>
@@ -31,6 +32,7 @@ const ReportRoute = () => {
                 readOnly
                 className="resize-none font-mono"
                 id="ingested"
+                rows={rows}
                 value={ingested.ingested}
               />
               <CopyButton value={ingested.ingested} />
@@ -40,7 +42,7 @@ const ReportRoute = () => {
             <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
               Want to ingest another one?
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-lg text-muted-foreground">
               More data is always good.
             </p>
           </div>
