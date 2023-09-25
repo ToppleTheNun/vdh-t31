@@ -20,10 +20,7 @@ export const SiteFooter = () => (
         >
           GitHub
         </a>
-        .{" "}
-        {ENV.BUILD_TIME
-          ? `Built at ${ENV.BUILD_TIME} for commit ${ENV.COMMIT_SHA}`
-          : null}
+        .
       </p>
     </div>
   </footer>
