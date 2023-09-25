@@ -9,7 +9,7 @@ import { loader } from "~/ingest/loader.server";
 
 const ReportRoute = () => {
   const ingested = useLoaderData<typeof loader>();
-  const rows = Math.min(1, Math.max(ingested.ingested.split("\n").length, 20));
+  const rows = Math.max(1, Math.min(ingested.ingested.split("\n").length, 20));
 
   return (
     <div className="container">
