@@ -34,4 +34,6 @@ const formatIngestedReportFightAsTSV = (fight: IngestedReportFight): string => {
 export const formatAsTSV = (report: ReportWithIngestedFights): string =>
   report.ingestedFights
     .map(formatIngestedReportFightAsTSV)
+    .filter(isPresent)
+    .filter((it) => it.trim().length !== 0)
     .join(NEWLINE_CHARACTER);
