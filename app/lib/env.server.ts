@@ -50,9 +50,9 @@ export function init() {
 export function getEnv() {
   return {
     MODE: process.env.NODE_ENV,
-    BUILD_TIME: process.env.BUILD_TIME,
-    BUILD_TIMESTAMP: process.env.BUILD_TIMESTAMP,
-    COMMIT_SHA: process.env.COMMIT_SHA,
+    BUILD_TIME: generated.BUILD_TIME,
+    BUILD_TIMESTAMP: generated.BUILD_TIMESTAMP,
+    COMMIT_SHA: generated.COMMIT_SHA,
     SENTRY_DSN: process.env.SENTRY_DSN,
     VERCEL_ANALYTICS_ID: process.env.VERCEL_ANALYTICS_ID,
   };

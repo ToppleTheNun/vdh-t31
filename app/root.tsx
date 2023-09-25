@@ -62,10 +62,10 @@ export const links: LinksFunction = () => {
   ].filter(isPresent);
 };
 
-const title = "Warcraft WoGs";
+const title = "VDH T31";
 
 export const meta: MetaFunction = () => {
-  const url = "https://warcraftwogs.com/";
+  const url = "https://vdh-t31.vercel.app/";
   const description = "Vengeance Demon Hunter T31 log automatic parser.";
 
   return [
