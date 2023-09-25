@@ -18,7 +18,7 @@
     "lint:fix": "eslint --fix app && prettier --write app",
     "start": "tsx scripts/generate-env.ts && remix-serve build",
     "typecheck": "tsc",
-    "vercel-build": "nr build && sentry-upload-sourcemaps && rimraf build/*.map && rimraf public/build/*.map && rimraf public/build/**/*.map && tsx scripts/bust-leaderboard-cache.ts"
+    "vercel-build": "nr build && sentry-upload-sourcemaps && rimraf build/*.map && rimraf public/build/*.map && rimraf public/build/**/*.map"
   },
   "dependencies": {
     "@hookform/resolvers": "3.3.1",
