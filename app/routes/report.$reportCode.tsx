@@ -2,6 +2,7 @@ import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 
 import { IngestForm } from "~/components/IngestForm";
+import { ReportPageHeader } from "~/components/PageHeader";
 import { PageLayout } from "~/components/PageLayout";
 import { ReportData, ReportDataFallback } from "~/components/ReportData";
 import { action } from "~/ingest/action.server";
@@ -12,6 +13,7 @@ const ReportRoute = () => {
 
   return (
     <PageLayout>
+      <ReportPageHeader />
       <Suspense fallback={<ReportDataFallback reportCode={reportCode} />}>
         <Await resolve={ingested}>
           {(resolvedInjested) => (
