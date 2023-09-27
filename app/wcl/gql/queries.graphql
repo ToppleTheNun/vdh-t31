@@ -26,3 +26,16 @@ query getTable($reportID: String!, $fightIDs: [Int!]!, $spellID: Float!) {
         }
     }
 }
+
+query getCombatantInfoEvents($reportID: String!, $fightIDs: [Int!]!) {
+    reportData {
+        report(code: $reportID) {
+            events(
+                dataType: CombatantInfo
+                fightIDs: $fightIDs
+            ) {
+                data
+            }
+        }
+    }
+}

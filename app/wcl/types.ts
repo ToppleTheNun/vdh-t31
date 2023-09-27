@@ -2087,6 +2087,25 @@ export type GetTableQuery = {
   } | null;
 };
 
+export type GetCombatantInfoEventsQueryVariables = Exact<{
+  reportID: Scalars["String"]["input"];
+  fightIDs: Array<Scalars["Int"]["input"]> | Scalars["Int"]["input"];
+}>;
+
+export type GetCombatantInfoEventsQuery = {
+  __typename?: "Query";
+  reportData?: {
+    __typename?: "ReportData";
+    report?: {
+      __typename?: "Report";
+      events?: {
+        __typename?: "ReportEventPaginator";
+        data?: any | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
 export const GetFightsDocument = gql`
   query getFights($reportID: String!) {
     reportData {
@@ -2113,6 +2132,17 @@ export const GetTableDocument = gql`
           fightIDs: $fightIDs
           translate: true
         )
+      }
+    }
+  }
+`;
+export const GetCombatantInfoEventsDocument = gql`
+  query getCombatantInfoEvents($reportID: String!, $fightIDs: [Int!]!) {
+    reportData {
+      report(code: $reportID) {
+        events(dataType: CombatantInfo, fightIDs: $fightIDs) {
+          data
+        }
       }
     }
   }
@@ -2160,6 +2190,21 @@ export function getSdk(
             ...wrappedRequestHeaders,
           }),
         "getTable",
+        "query",
+      );
+    },
+    getCombatantInfoEvents(
+      variables: GetCombatantInfoEventsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetCombatantInfoEventsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetCombatantInfoEventsQuery>(
+            GetCombatantInfoEventsDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders },
+          ),
+        "getCombatantInfoEvents",
         "query",
       );
     },

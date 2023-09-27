@@ -4,6 +4,7 @@ import type {
   Report,
   ReportFight,
   ReportWithIngestedFights,
+  ReportWithIngestibleFights,
   SigilOfFlameProcs,
 } from "~/ingest/types";
 import { debug, error } from "~/lib/log.server";
@@ -11,8 +12,13 @@ import type { Timings } from "~/lib/timing.server";
 import { time } from "~/lib/timing.server";
 import { isPresent } from "~/typeGuards";
 import { typedKeys } from "~/utils";
-import { getFights, getTable } from "~/wcl/queries";
-import { type DamageDoneTable, damageDoneTableSchema } from "~/wcl/schema";
+import { getCombatantInfoEvents, getFights, getTable } from "~/wcl/queries";
+import {
+  type CombatantInfoEvents,
+  combatantInfoEventsSchema,
+  type DamageDoneTable,
+  damageDoneTableSchema,
+} from "~/wcl/schema";
 
 const getBasicReport = async (
   reportID: string,
@@ -51,30 +57,32 @@ const getBasicReport = async (
 };
 
 const calculateSigilOfFlameProcs = (
+  fightID: number,
   tickData: DamageDoneTable,
   procData: DamageDoneTable,
 ): SigilOfFlameProcs[] => {
   const tickDataByName = tickData.entries.reduce(
-    (acc, val) => ({ ...acc, [val.name]: val.tickCount }),
-    {} as Record<string, number>,
+    (acc, val) => ({ ...acc, [val.name]: [val.id, val.tickCount] as const }),
+    {} as Record<string, readonly [number, number]>,
   );
   const procDataByName = procData.entries.reduce(
-    (acc, val) => ({ ...acc, [val.name]: val.hitCount }),
-    {} as Record<string, number>,
+    (acc, val) => ({ ...acc, [val.name]: [val.id, val.hitCount] as const }),
+    {} as Record<string, readonly [number, number]>,
   );
 
-  debug("calculateSigilOfFlameProcs - tickDataByName", tickDataByName);
-  debug("calculateSigilOfFlameProcs - procDataByName", procDataByName);
+  debug(`calculateSigilOfFlameProcs(${fightID}) - tickDataByName`, tickDataByName);
+  debug(`calculateSigilOfFlameProcs(${fightID}) - procDataByName`, procDataByName);
 
   return (
     typedKeys(procDataByName)
       .map<SigilOfFlameProcs>((name) => ({
-        name,
-        ticks: tickDataByName[name] ?? 0,
-        procs: procDataByName[name] ?? 0,
+        sourceID: tickDataByName[name]?.[0] ?? 0,
+        name: name,
+        ticks: tickDataByName[name]?.[1] ?? 0,
+        procs: procDataByName[name]?.[1] ?? 0,
       }))
       // ensure we only keep data where they both ticked and proc-ed
-      .filter((it) => it.procs > 0 && it.ticks > 0)
+      .filter((it) => it.procs > 0 && it.ticks > 0 && it.name)
   );
 };
 
@@ -83,7 +91,7 @@ const getTableData = async (
   fightID: number,
   spellID: number,
   timings: Timings,
-): Promise<DamageDoneTable | undefined> => {
+): Promise<DamageDoneTable | null> => {
   const query = await time(
     () =>
       getTable({
@@ -91,26 +99,84 @@ const getTableData = async (
         fightIDs: [fightID],
         spellID,
       }),
-    { type: `wcl.query.getTable.${spellID}`, timings },
+    { type: `wcl.query.getTable(${spellID})`, timings },
   );
   const table = query.reportData?.report?.table?.data;
   if (!table) {
     error(
       `Unable to retrieve table for reportID=${reportID} fightID=${fightID} spellID=${spellID}`,
     );
-    return undefined;
+    return null;
   }
-  debug("table=", JSON.stringify(table));
   const parsed = await time(() => damageDoneTableSchema.safeParseAsync(table), {
     type: `zod.safeParseAsync.damageDoneTableSchema.${spellID}`,
     timings,
   });
   if (!parsed.success) {
     error("Unable to parse table data", parsed.error.flatten());
-    return undefined;
+    return null;
   }
-  debug("parsed=", parsed);
   return parsed.data;
+};
+
+const getCombatantInfos = async (
+  reportID: string,
+  fightIDs: number[],
+  timings: Timings,
+): Promise<CombatantInfoEvents> => {
+  try {
+    const fightIDsAsString = fightIDs.join(",");
+    const query = await time(
+      () => getCombatantInfoEvents({ reportID, fightIDs }),
+      { type: `wcl.query.getCombatantInfoEvents([${fightIDsAsString}])` },
+    );
+    const events = query.reportData?.report?.events?.data;
+    if (!events) {
+      error(
+        `Unable to retrieve combatant info events for reportID=${reportID} fightIDs=[${fightIDsAsString}]`,
+      );
+      return [];
+    }
+    const parsed = await time(
+      () => combatantInfoEventsSchema.safeParseAsync(events),
+      {
+        type: `zod.safeParseAsync.combatantInfoEventsSchema`,
+        timings,
+      },
+    );
+    if (!parsed.success) {
+      error(
+        "Unable to parse combatantinfo events data",
+        parsed.error.flatten(),
+      );
+      return [];
+    }
+    return parsed.data;
+  } catch (e) {
+    error("Error while getting combatant infos", e);
+    return [];
+  }
+};
+
+const enhanceReport = async (
+  basicReport: Report,
+  timings: Timings,
+): Promise<ReportWithIngestibleFights | null> => {
+  const fightIDs = basicReport.reportFights.map((fight) => fight.id);
+  const combatantInfoEvents = await getCombatantInfos(
+    basicReport.id,
+    fightIDs,
+    timings,
+  );
+  const ingestibleFights = basicReport.reportFights.map<IngestibleReportFight>(
+    (fight) => ({
+      ...fight,
+      combatantInfoEvents: combatantInfoEvents.filter(
+        (info) => info.fight === fight.id,
+      ),
+    }),
+  );
+  return { ...basicReport, combatantInfoEvents, ingestibleFights };
 };
 
 const ingestFight = async (
@@ -138,7 +204,7 @@ const ingestFight = async (
   }
 
   const procs = await time(
-    () => calculateSigilOfFlameProcs(tickData, procData),
+    () => calculateSigilOfFlameProcs(reportFight.id, tickData, procData),
     { type: "calculateSigilOfFlameProcs", timings },
   );
 
@@ -157,9 +223,15 @@ export const ingestFightsFromReport = async (
     return null;
   }
 
-  const ingestibleFights = basicReport.reportFights;
+  const enhancedReport = await enhanceReport(basicReport, timings);
+  if (!enhancedReport) {
+    return null;
+  }
 
-  const ingestedFights = await ingestFights(ingestibleFights, timings);
+  const ingestedFights = await ingestFights(
+    enhancedReport.ingestibleFights,
+    timings,
+  );
 
-  return { ...basicReport, ingestibleFights, ingestedFights };
+  return { ...enhancedReport, ingestedFights };
 };

@@ -1,3 +1,5 @@
+import type { CombatantInfoEvents } from "~/wcl/schema";
+
 export type ReportFight = {
   id: number;
   reportID: string;
@@ -5,10 +7,13 @@ export type ReportFight = {
   endTime: number;
 };
 
-export type IngestibleReportFight = ReportFight;
+export type IngestibleReportFight = ReportFight & {
+  combatantInfoEvents: CombatantInfoEvents;
+};
 
 export type SigilOfFlameProcs = {
   name: string;
+  sourceID: number;
   ticks: number;
   procs: number;
 };
@@ -26,6 +31,7 @@ export type Report = {
 };
 
 export type ReportWithIngestibleFights = Report & {
+  combatantInfoEvents: CombatantInfoEvents;
   ingestibleFights: IngestibleReportFight[];
 };
 

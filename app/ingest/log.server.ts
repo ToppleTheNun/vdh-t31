@@ -10,7 +10,10 @@ export const ingestWarcraftLogsReport = async (
 ) => {
   info(`Ingesting WCL report: ${reportCode}`);
   const fights = await ingestFightsFromReport(reportCode, timings);
-  debug(`Ingested fights`, fights);
+  debug(
+    `Ingested fights from ${reportCode}:`,
+    fights?.ingestedFights?.map((fight) => fight.id)?.join(", "),
+  );
   if (!fights) {
     throw new Error("No fights returned from WCL API!");
   }

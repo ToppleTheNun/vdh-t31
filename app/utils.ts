@@ -4,7 +4,7 @@ export const getReportCode = (input: string): string | undefined => {
   const match = input
     .trim()
     .match(
-      /^(.*reports\/)?((?:[a:]{2})([a-zA-Z0-9]{16})|([a-zA-Z0-9]{16}))\/?(#.*)?$/,
+      /^(.*reports\/)?([a:]{2}([a-zA-Z0-9]{16})|([a-zA-Z0-9]{16}))\/?(#.*)?$/,
     );
   return match?.at(2);
 };
@@ -19,5 +19,5 @@ export const formatDuration = (millis: number): string => {
   const minutes = String(duration.minutes ?? 0).padStart(2, "0");
   const seconds = String(duration.seconds ?? 0).padStart(2, "0");
 
-  return `${hours}.${minutes}.${seconds}`;
+  return `${hours}:${minutes}:${seconds}`;
 };

@@ -1,9 +1,10 @@
 import { getCachedSdk } from "~/wcl/client";
 import type {
+  GetCombatantInfoEventsQuery, GetCombatantInfoEventsQueryVariables,
   GetFightsQuery,
   GetFightsQueryVariables,
   GetTableQuery,
-  GetTableQueryVariables,
+  GetTableQueryVariables
 } from "~/wcl/types";
 
 export const getFights = async (
@@ -20,4 +21,12 @@ export const getTable = async (
   const sdk = await getCachedSdk();
 
   return sdk.getTable(params);
+};
+
+export const getCombatantInfoEvents = async (
+  params: GetCombatantInfoEventsQueryVariables,
+): Promise<GetCombatantInfoEventsQuery> => {
+  const sdk = await getCachedSdk();
+
+  return sdk.getCombatantInfoEvents(params);
 };

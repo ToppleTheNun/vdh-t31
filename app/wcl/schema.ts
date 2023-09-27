@@ -51,3 +51,27 @@ export const damageDoneTableSchema = z.object({
   gameVersion: z.number().int(),
 });
 export type DamageDoneTable = z.infer<typeof damageDoneTableSchema>;
+
+export const talentTreeEntrySchema = z.object({
+  id: z.number().int(),
+  rank: z.number().int(),
+  spellID: z.number().int(),
+  icon: z.string(),
+  nodeID: z.number().int(),
+  spellType: z.number().int()
+});
+export type TalentTreeEntry = z.infer<typeof talentTreeEntrySchema>;
+
+export const talentTreeSchema = z.array(talentTreeEntrySchema);
+export type TalentTree = z.infer<typeof talentTreeSchema>;
+
+export const combatantInfoEventSchema = z.object({
+  type: z.literal("combatantinfo"),
+  fight: z.number().int(),
+  sourceID: z.number().int(),
+  talentTree: talentTreeSchema,
+});
+export type CombatantInfoEvent = z.infer<typeof combatantInfoEventSchema>;
+
+export const combatantInfoEventsSchema = z.array(combatantInfoEventSchema);
+export type CombatantInfoEvents = z.infer<typeof combatantInfoEventsSchema>;
