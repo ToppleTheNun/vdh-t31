@@ -1,10 +1,11 @@
 import { getCachedSdk } from "~/wcl/client";
 import type {
-  GetCombatantInfoEventsQuery, GetCombatantInfoEventsQueryVariables,
+  GetCombatantInfoEventsQuery,
+  GetCombatantInfoEventsQueryVariables,
   GetFightsQuery,
   GetFightsQueryVariables,
   GetTableQuery,
-  GetTableQueryVariables
+  GetTableQueryVariables,
 } from "~/wcl/types";
 
 export const getFights = async (

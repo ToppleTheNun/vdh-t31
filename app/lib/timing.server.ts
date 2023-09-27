@@ -34,7 +34,7 @@ export const time = async <ReturnType>(
     type: string;
     desc?: string;
     timings?: Timings;
-  }
+  },
 ): Promise<ReturnType> => {
   const start = performance.now();
   const promise = typeof fn === "function" ? fn() : fn;

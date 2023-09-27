@@ -58,7 +58,7 @@ export const talentTreeEntrySchema = z.object({
   spellID: z.number().int(),
   icon: z.string(),
   nodeID: z.number().int(),
-  spellType: z.number().int()
+  spellType: z.number().int(),
 });
 export type TalentTreeEntry = z.infer<typeof talentTreeEntrySchema>;
 

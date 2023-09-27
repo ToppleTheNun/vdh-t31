@@ -1,41 +1,38 @@
 query getFights($reportID: String!) {
-    reportData {
-        report(code: $reportID) {
-            title
-            startTime
-            endTime
+  reportData {
+    report(code: $reportID) {
+      title
+      startTime
+      endTime
 
-            fights(translate: true) {
-                id
-                startTime
-                endTime
-            }
-        }
+      fights(translate: true) {
+        id
+        startTime
+        endTime
+      }
     }
+  }
 }
 
 query getTable($reportID: String!, $fightIDs: [Int!]!, $spellID: Float!) {
-    reportData {
-        report(code: $reportID) {
-            table(
-                abilityID: $spellID
-                dataType: DamageDone
-                fightIDs: $fightIDs
-                translate: true
-            )
-        }
+  reportData {
+    report(code: $reportID) {
+      table(
+        abilityID: $spellID
+        dataType: DamageDone
+        fightIDs: $fightIDs
+        translate: true
+      )
     }
+  }
 }
 
 query getCombatantInfoEvents($reportID: String!, $fightIDs: [Int!]!) {
-    reportData {
-        report(code: $reportID) {
-            events(
-                dataType: CombatantInfo
-                fightIDs: $fightIDs
-            ) {
-                data
-            }
-        }
+  reportData {
+    report(code: $reportID) {
+      events(dataType: CombatantInfo, fightIDs: $fightIDs) {
+        data
+      }
     }
+  }
 }

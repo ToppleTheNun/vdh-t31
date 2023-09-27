@@ -9,16 +9,22 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  isRouteErrorResponse,
+  useRouteError,
 } from "@remix-run/react";
-import { withSentry } from "@sentry/remix";
+import { captureRemixErrorBoundaryError, withSentry } from "@sentry/remix";
 import { Analytics } from "@vercel/analytics/react";
 
+import { SiteFooter } from "~/components/SiteFooter";
 import { TailwindIndicator } from "~/components/TailwindIndicator";
 import fontStylesheetUrl from "~/font.css";
 import { getEnv } from "~/lib/env.server";
 import tailwindStylesheetUrl from "~/tailwind.css";
 import { isPresent } from "~/typeGuards";
-import { SiteFooter } from "~/components/SiteFooter";
+import { ReactNode } from "react";
+import { IngestForm } from "~/components/IngestForm";
+import { ErrorPageHeader } from "~/components/PageHeader";
+import { PageLayout } from "~/components/PageLayout";
 
 export const links: LinksFunction = () => {
   return [
@@ -102,9 +108,7 @@ export const loader = () => {
   });
 };
 
-function App() {
-  const data = useLoaderData<typeof loader>();
-
+const Document = ({ children }: { children: ReactNode }) => {
   return (
     <html className="dark" lang="en" dir="auto">
       <head>
@@ -113,37 +117,120 @@ function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-background min-h-screen font-sans antialiased">
+      <body
+        className="min-h-screen bg-background font-sans antialiased"
+        suppressHydrationWarning
+      >
+        {children}
+        <TailwindIndicator />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+};
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+
+  captureRemixErrorBoundaryError(error);
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <Document>
         <div className="relative flex min-h-screen flex-col">
           <div className="flex-1">
-            <Outlet />
+            <PageLayout>
+              <ErrorPageHeader />
+              <div className="pb-12 pt-8">
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {error.status} {error.statusText}
+                </h2>
+                <p className="text-lg text-muted-foreground">{error.data}</p>
+              </div>
+            </PageLayout>
           </div>
           <SiteFooter />
         </div>
-        <TailwindIndicator />
-        <ScrollRestoration />
-        <script
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: `
+      </Document>
+    );
+  }
+
+  if (error instanceof Error) {
+    return (
+      <Document>
+        <div className="relative flex min-h-screen flex-col">
+          <div className="flex-1">
+            <PageLayout>
+              <ErrorPageHeader />
+              <div className="pb-12 pt-8">
+                <h2 className="text-3xl font-bold tracking-tight">Error</h2>
+                <p className="text-lg text-muted-foreground">{error.message}</p>
+                <p className="text-lg text-muted-foreground">Stack Trace</p>
+                <pre>{error.stack}</pre>
+              </div>
+            </PageLayout>
+          </div>
+          <SiteFooter />
+        </div>
+      </Document>
+    );
+  }
+
+  return (
+    <Document>
+      <div className="relative flex min-h-screen flex-col">
+        <div className="flex-1">
+          <PageLayout>
+            <ErrorPageHeader />
+            <div className="pb-12 pt-8">
+              <h2 className="text-3xl font-bold tracking-tight">
+                Unknown Error
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                If you&apos;re seeing this, bug Topple relentlessly until he
+                fixes this.
+              </p>
+            </div>
+          </PageLayout>
+        </div>
+        <SiteFooter />
+      </div>
+    </Document>
+  );
+};
+
+function App() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <Document>
+      <div className="relative flex min-h-screen flex-col">
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <SiteFooter />
+      </div>
+      <ScrollRestoration />
+      <script
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: `
         const whTooltips = { colorLinks: true, iconizeLinks: true };
         `,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
-          }}
-        />
-        <script
-          src="https://wow.zamimg.com/js/tooltips.js"
-          type="text/javascript"
-        />
-        <Scripts />
-        <LiveReload />
-        <Analytics />
-      </body>
-    </html>
+        }}
+      />
+      <script
+        src="https://wow.zamimg.com/js/tooltips.js"
+        type="text/javascript"
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
+        }}
+      />
+      <Analytics />
+    </Document>
   );
 }
 

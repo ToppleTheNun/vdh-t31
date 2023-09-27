@@ -1,57 +1,38 @@
-import { useLoaderData } from "@remix-run/react";
+import { Await, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
 
-import { CopyButton } from "~/components/CopyButton";
 import { IngestForm } from "~/components/IngestForm";
-import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
+import { PageLayout } from "~/components/PageLayout";
+import { ReportData, ReportDataFallback } from "~/components/ReportData";
 import { action } from "~/ingest/action.server";
 import { loader } from "~/ingest/loader.server";
 
 const ReportRoute = () => {
-  const ingested = useLoaderData<typeof loader>();
-  const rows = Math.max(1, Math.min(ingested.ingested.split("\n").length, 20));
+  const { ingested, reportCode } = useLoaderData<typeof loader>();
 
   return (
-    <div className="container">
-      <main className="relative py-6 lg:gap-10 lg:py-8">
-        <div className="mx-auto w-full min-w-0">
+    <PageLayout>
+      <Suspense fallback={<ReportDataFallback reportCode={reportCode} />}>
+        <Await resolve={ingested}>
+          {(resolvedInjested) => (
+            <ReportData ingested={resolvedInjested} reportCode={reportCode} />
+          )}
+        </Await>
+      </Suspense>
+      <div className="pb-12 pt-8">
+        <div className="space-y-3">
           <div className="space-y-2">
-            <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
-              VDH T31 Procs for {ingested.reportCode}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Proc rates for the VDH T31 4pc.
-            </p>
-          </div>
-          <div className="pb-12 pt-8">
-            <div className="relative mt-6 grid w-full gap-2" dir="ltr">
-              <Label htmlFor="ingested">
-                Data (for easy paste into Google Sheets)
-              </Label>
-              <Textarea
-                readOnly
-                className="resize-none font-mono"
-                id="ingested"
-                rows={rows}
-                value={ingested.ingested}
-              />
-              <CopyButton value={ingested.ingested} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight">
               Want to ingest another one?
-            </h1>
+            </h2>
             <p className="text-lg text-muted-foreground">
               More data is always good.
             </p>
           </div>
-          <div className="pb-12 pt-8">
-            <IngestForm />
-          </div>
+          <IngestForm />
         </div>
-      </main>
-    </div>
+      </div>
+    </PageLayout>
   );
 };
 

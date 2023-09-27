@@ -7,7 +7,7 @@ const ptr2WowheadUrl = "https://ptr2.wowhead.com/";
 export enum Version {
   LIVE = "",
   PTR = "ptr",
-  PTR2 = "ptr-2"
+  PTR2 = "ptr-2",
 }
 
 export const item = (id: number, version: Version = Version.LIVE): string => {
@@ -35,8 +35,10 @@ export const spell = (id: number, version: Version = Version.LIVE): string => {
   }
 };
 
-export const spellData = (id: number, version: Version = Version.LIVE): string =>
-  [`spell=${id}`, getDomain(version)].filter(isPresent).join("&");
+export const spellData = (
+  id: number,
+  version: Version = Version.LIVE,
+): string => [`spell=${id}`, getDomain(version)].filter(isPresent).join("&");
 
 const getDomain = (version: Version): string | null => {
   switch (version) {

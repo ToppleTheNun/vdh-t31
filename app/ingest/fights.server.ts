@@ -70,8 +70,14 @@ const calculateSigilOfFlameProcs = (
     {} as Record<string, readonly [number, number]>,
   );
 
-  debug(`calculateSigilOfFlameProcs(${fightID}) - tickDataByName`, tickDataByName);
-  debug(`calculateSigilOfFlameProcs(${fightID}) - procDataByName`, procDataByName);
+  debug(
+    `calculateSigilOfFlameProcs(${fightID}) - tickDataByName`,
+    tickDataByName,
+  );
+  debug(
+    `calculateSigilOfFlameProcs(${fightID}) - procDataByName`,
+    procDataByName,
+  );
 
   return (
     typedKeys(procDataByName)

@@ -1,12 +1,14 @@
-import { CheckIcon, CopyIcon } from "lucide-react";
-import { type HTMLAttributes, useEffect, useState } from "react";
+import { CheckIcon, CopyIcon, Loader2Icon } from "lucide-react";
+import { type ComponentPropsWithoutRef, useEffect, useState } from "react";
 
 import { Button } from "~/components/ui/button";
 
-interface Props extends Omit<HTMLAttributes<HTMLButtonElement>, "onClick"> {
+interface Props
+  extends Omit<ComponentPropsWithoutRef<typeof Button>, "onClick"> {
+  loading?: boolean;
   value: string;
 }
-export const CopyButton = ({ value, ...props }: Props) => {
+export const CopyButton = ({ loading, value, ...props }: Props) => {
   const [hasCopied, setHasCopied] = useState(false);
 
   const onClick = () => {
@@ -20,6 +22,14 @@ export const CopyButton = ({ value, ...props }: Props) => {
     }, 2000);
     return () => clearTimeout(timeout);
   }, [hasCopied]);
+
+  if (loading) {
+    return (
+      <Button {...props} disabled>
+        <Loader2Icon className="mr-2 h-3 w-3" /> Loading...
+      </Button>
+    );
+  }
 
   if (hasCopied) {
     return (

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFetcher } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "~/components/ui/button";
@@ -11,9 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { type Ingest, schema } from "~/ingest/schema";
 import { Input } from "~/components/ui/input";
-import { useFetcher } from "@remix-run/react";
+import { type Ingest, schema } from "~/ingest/schema";
 
 export const IngestForm = () => {
   const fetcher = useFetcher();
