@@ -4,6 +4,7 @@ import type { DataFunctionArgs, EntryContext } from "@remix-run/node";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { captureException, captureRemixServerException } from "@sentry/remix";
+import { handleRequest as handleVercelRemixRequest } from "@vercel/remix";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
@@ -36,6 +37,14 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
+  if (ENV.MODE === "production") {
+    return handleVercelRequest(
+      request,
+      responseStatusCode,
+      responseHeaders,
+      remixContext,
+    );
+  }
   return isbot(request.headers.get("user-agent"))
     ? handleBotRequest(
         request,
@@ -49,6 +58,21 @@ export default function handleRequest(
         responseHeaders,
         remixContext,
       );
+}
+
+function handleVercelRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+) {
+  const remixServer = <RemixServer context={remixContext} url={request.url} />;
+  return handleVercelRemixRequest(
+    request,
+    responseStatusCode,
+    responseHeaders,
+    remixServer,
+  );
 }
 
 function handleBotRequest(
