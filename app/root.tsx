@@ -25,6 +25,7 @@ import { ReactNode } from "react";
 import { IngestForm } from "~/components/IngestForm";
 import { ErrorPageHeader } from "~/components/PageHeader";
 import { PageLayout } from "~/components/PageLayout";
+import { H2, Lead } from "~/components/typography";
 
 export const links: LinksFunction = () => {
   return [
@@ -143,10 +144,10 @@ export const ErrorBoundary = () => {
             <PageLayout>
               <ErrorPageHeader />
               <div className="pb-12 pt-8">
-                <h2 className="text-3xl font-bold tracking-tight">
+                <H2>
                   {error.status} {error.statusText}
-                </h2>
-                <p className="text-lg text-muted-foreground">{error.data}</p>
+                </H2>
+                <Lead>{error.data}</Lead>
               </div>
             </PageLayout>
           </div>
@@ -164,10 +165,12 @@ export const ErrorBoundary = () => {
             <PageLayout>
               <ErrorPageHeader />
               <div className="pb-12 pt-8">
-                <h2 className="text-3xl font-bold tracking-tight">Error</h2>
-                <p className="text-lg text-muted-foreground">{error.message}</p>
-                <p className="text-lg text-muted-foreground">Stack Trace</p>
-                <pre>{error.stack}</pre>
+                <H2>Error</H2>
+                <Lead>{error.message}</Lead>
+                <Lead>Stack Trace</Lead>
+                <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                  {error.stack}
+                </code>
               </div>
             </PageLayout>
           </div>
@@ -184,13 +187,11 @@ export const ErrorBoundary = () => {
           <PageLayout>
             <ErrorPageHeader />
             <div className="pb-12 pt-8">
-              <h2 className="text-3xl font-bold tracking-tight">
-                Unknown Error
-              </h2>
-              <p className="text-lg text-muted-foreground">
+              <H2>Unknown Error</H2>
+              <Lead>
                 If you&apos;re seeing this, bug Topple relentlessly until he
                 fixes this.
-              </p>
+              </Lead>
             </div>
           </PageLayout>
         </div>

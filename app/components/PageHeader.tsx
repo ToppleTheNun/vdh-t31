@@ -1,40 +1,32 @@
 import { NavLink } from "@remix-run/react";
 
+import { H1, Lead } from "~/components/typography";
+
 export const IndexPageHeader = () => (
   <div className="space-y-2">
     <NavLink to="/">
-      <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
-        VDH T31 Proc Calculator
-      </h1>
+      <H1>VDH T31 Proc Calculator</H1>
     </NavLink>
-    <p className="text-lg text-muted-foreground">
-      Useful for calculating the proc rates for the VDH T31 4pc.
-    </p>
+    <Lead>Useful for calculating the proc rates for the VDH T31 4pc.</Lead>
   </div>
 );
 
 export const ReportPageHeader = () => (
   <div className="space-y-2">
     <NavLink to="/">
-      <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
-        VDH T31 Proc Calculator
-      </h1>
+      <H1>VDH T31 Proc Calculator</H1>
     </NavLink>
-    <p className="text-lg text-muted-foreground">
+    <Lead>
       Used for calculating the proc rates for the VDH T31 4pc in your log.
-    </p>
+    </Lead>
   </div>
 );
 
 export const ErrorPageHeader = () => (
   <div className="space-y-2">
     <NavLink to="/">
-      <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">
-        VDH T31 Proc Calculator
-      </h1>
+      <H1>VDH T31 Proc Calculator</H1>
     </NavLink>
-    <p className="text-lg text-muted-foreground">
-      Usually useful, but errored.
-    </p>
+    <Lead>Usually useful, but errored.</Lead>
   </div>
 );

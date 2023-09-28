@@ -5,6 +5,7 @@ import { IngestForm } from "~/components/IngestForm";
 import { ReportPageHeader } from "~/components/PageHeader";
 import { PageLayout } from "~/components/PageLayout";
 import { ReportData, ReportDataFallback } from "~/components/ReportData";
+import { H2, Lead } from "~/components/typography";
 import { action } from "~/ingest/action.server";
 import { loader } from "~/ingest/loader.server";
 
@@ -24,12 +25,8 @@ const ReportRoute = () => {
       <div className="pb-12 pt-8">
         <div className="space-y-3">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Want to ingest another one?
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              More data is always good.
-            </p>
+            <H2>Want to ingest another one?</H2>
+            <Lead>More data is always good.</Lead>
           </div>
           <IngestForm />
         </div>

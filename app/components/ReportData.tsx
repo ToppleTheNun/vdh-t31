@@ -1,16 +1,15 @@
 import { CopyButton } from "~/components/CopyButton";
+import { H2, Lead } from "~/components/typography";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 
 export const ReportDataFallback = ({ reportCode }: { reportCode: string }) => (
   <div className="pb-12 pt-8">
-    <h2 className="text-3xl font-bold tracking-tight">
-      Loading results for {reportCode}...
-    </h2>
-    <p className="text-lg text-muted-foreground">
+    <H2>Loading results for {reportCode}...</H2>
+    <Lead>
       Don&apos;t worry, the results will be formatted for easy pasting into
       Google Sheets.
-    </p>
+    </Lead>
     <div className="relative mt-6 grid w-full gap-2" dir="ltr">
       <Label htmlFor="ingested">Data (for easy paste into Google Sheets)</Label>
       <Textarea
@@ -36,12 +35,10 @@ export const ReportData = ({
 
   return (
     <div className="pb-12 pt-8">
-      <h2 className="text-3xl font-bold tracking-tight">
-        Results for {reportCode}
-      </h2>
-      <p className="text-lg text-muted-foreground">
+      <H2>Results for {reportCode}</H2>
+      <Lead>
         The results are formatted for easy pasting into Google Sheets.
-      </p>
+      </Lead>
       <div className="relative mt-6 grid w-full gap-2" dir="ltr">
         <Label htmlFor="ingested">Results</Label>
         <Textarea
