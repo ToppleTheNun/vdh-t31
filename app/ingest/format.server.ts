@@ -28,12 +28,15 @@ const calculateLineForProcs =
       combatantInfoEvent?.talentTree?.some((it) => it.id === 112856) ?? false;
     const hasQuickenedSigils =
       combatantInfoEvent?.talentTree?.some((it) => it.id === 112915) ?? false;
-    const ranksInExtendedSigils =
-      combatantInfoEvent?.talentTree?.find((it) => it.id === 112916)?.rank ?? 0;
+    const hasChainsOfAnger =
+      combatantInfoEvent?.talentTree?.find((it) => it.id === 112879)?.rank ?? 0;
+    const hasIlluminatedSigils =
+      combatantInfoEvent?.talentTree?.find((it) => it.id === 117760)?.rank ?? 0;
 
     let preciseConcentratedNone: SigilModifier = "";
-    let pointsInES = "";
     let quickened = "FALSE";
+    let chainsOfAnger = "FALSE";
+    let illuminated = "FALSE";
     if (combatantInfoEvent) {
       if (hasPreciseSigils) {
         preciseConcentratedNone = "Precise";
@@ -47,15 +50,22 @@ const calculateLineForProcs =
         quickened = "TRUE";
       }
 
-      pointsInES = `${ranksInExtendedSigils}`;
+      if (hasChainsOfAnger) {
+        chainsOfAnger = "TRUE";
+      }
+
+      if (hasIlluminatedSigils) {
+        illuminated = "TRUE";
+      }
     }
 
     return [
       proc.name,
       wclLink,
       preciseConcentratedNone,
-      pointsInES,
       quickened,
+      chainsOfAnger,
+      illuminated,
       duration,
       "", // number of targets,
       `${proc.ticks}`,
